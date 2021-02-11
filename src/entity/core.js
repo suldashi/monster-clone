@@ -249,6 +249,7 @@ class EngineCore {
         let playerColliderComponent = this.collisionSystem.createCollisionComponent(bodyComponent, "player");
         let playerInputComponent = this.inputFactory.createPlayerInputComponent();
         let renderComponent = this.renderer.createPlayerRenderComponent(bodyComponent, playerComponent);
+        playerCreationHelpers.attachSchedulersToPlayer(playerEntity, playerComponent, this.schedulerFactory);
         playerEntity.attachComponents(bodyComponent, playerComponent, renderComponent,
             playerInputComponent, playerBodyComponent, playerColliderComponent);
         this.sceneSystem.addEntityToActiveScene(playerEntity);
@@ -259,14 +260,14 @@ class EngineCore {
         EventSystem.setActiveComponents(this.sceneSystem.activeScene.allComponents);
         let inputComponents = this.sceneSystem.activeScene.getComponentsBySystem(this.inputFactory);
         this.inputFactory.update(inputComponents, delta);
-        let schedulerComponents = this.sceneSystem.activeScene.getComponentsBySystem(this.schedulerFactory);
-        this.schedulerFactory.update(schedulerComponents, delta*1000);
         let physicsComponents = this.sceneSystem.activeScene.getComponentsBySystem(this.physics);
         this.physics.update(physicsComponents, delta);
         let collisionComponents = this.sceneSystem.activeScene.getComponentsBySystem(this.collisionSystem);
         this.collisionSystem.update(collisionComponents);
         let entities = this.sceneSystem.activeScene.getComponentsBySystem(this.entityFactory);
         this.entityFactory.update(entities, delta);
+        let schedulerComponents = this.sceneSystem.activeScene.getComponentsBySystem(this.schedulerFactory);
+        this.schedulerFactory.update(schedulerComponents, delta*1000);
         EventSystem.clearActiveComponents();
         if(this.sceneSystem.swapToQueuedScene()) {
             this.renderer.setActiveRenderScene(this.sceneSystem.activeScene.renderScene);

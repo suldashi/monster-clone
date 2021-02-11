@@ -12,14 +12,14 @@ class PlayerState {
 		this.stateTransitions[currentState+this.separator+action] = nextState;
 	}
 
-	doAction(action) {
+	doAction(action, data) {
 		const prevState = this._stateName;
 		if(this.stateTransitions[prevState+this.separator+action] || this.stateTransitions["*"+this.separator+action]) {
 			this._stateName = this.stateTransitions[prevState+this.separator+action]
 				?this.stateTransitions[prevState+this.separator+action]
 				:this.stateTransitions["*"+this.separator+action]
 			if (prevState !== this._stateName) {
-				this.playerComponent.stateChanged(this.stateName, prevState);
+				this.playerComponent.stateChanged(this.stateName, prevState, data);
 			}
 		}
 	}

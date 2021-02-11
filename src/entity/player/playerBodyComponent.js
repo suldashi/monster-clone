@@ -3,7 +3,7 @@ const Vec2 = require("../../physics/vec2");
 class PlayerBodyComponent {
     constructor(bodyComponent) {
         this.bodyComponent = bodyComponent;
-        this.speed = 300;
+        this.speed = 144;
     }
 
     getDirectionVector(direction) {

@@ -10,27 +10,36 @@ class PlayerComponent extends BaseComponent {
         this.direction = "e";
         this.isFacingLeft = false;
         this.state = new PlayerState(this);
+        this.isMoving = false;
+        this.latestInput = null;
         this.on("newPlayerControlsMove",(inputs) => {
-            this.handleMoveInputs(inputs);
+            this.isMoving = inputs.up || inputs.down || inputs.left || inputs.right;
+            this.latestInput = inputs;
+            this.handleMoveInputs();
         });
+        this.onStartedMoving = () => {}
     }
 
-    handleMoveInputs(inputs) {
-        let direction = this.getDirection(inputs);
-        if(direction !== "0") {
+    handleMoveInputs() {
+        this.state.doAction("move");
+    }
+
+    stopMoving() {
+        this.playerBodyComponent.stopMoving();
+        this.state.doAction("stopMoving");
+    }
+
+    finishedMovingTile() {
+        if(this.isMoving) {
+            let direction = this.getDirection(this.latestInput);
             this.direction = direction;
             this.playerBodyComponent.move(this.direction);
-            this.state.doAction("move");
+            this.setIsFacingLeft();
+            this.onStartedMoving();
         }
         else {
             this.playerBodyComponent.stopMoving();
             this.state.doAction("stopMoving");
-        }
-        if(inputs.left && !inputs.right) {
-            this.isFacingLeft = true;
-        }
-        else if(!inputs.left && (inputs.right || inputs.up || inputs.down)) {
-            this.isFacingLeft = false;
         }
     }
 
@@ -52,8 +61,25 @@ class PlayerComponent extends BaseComponent {
         }
     }
 
+    setIsFacingLeft(inputs = this.latestInput) {
+        if(inputs.left && !inputs.right) {
+            this.isFacingLeft = true;
+        }
+        else if(!inputs.left && (inputs.right || inputs.up || inputs.down)) {
+            this.isFacingLeft = false;
+        } 
+    }
+
     stateChanged(newState, prevState) {
-        
+        if(newState==="running") {
+            let direction = this.getDirection(this.latestInput);
+            if(direction !== "0") {
+                this.direction = direction;
+                this.playerBodyComponent.move(this.direction);
+                this.setIsFacingLeft();
+                this.onStartedMoving();
+            }
+        }
     }
 
     update() {

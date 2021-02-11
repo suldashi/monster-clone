@@ -3,6 +3,7 @@ class Scheduler {
         this.tasks = [];
         this.taskTimeOffset = 0;
         this.reset();
+        
     }
 
     reset() {
